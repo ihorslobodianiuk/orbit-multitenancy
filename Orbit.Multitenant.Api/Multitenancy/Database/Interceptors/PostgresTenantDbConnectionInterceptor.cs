@@ -13,12 +13,10 @@ namespace Orbit.Multitenant.Api.Multitenancy.Database.Interceptors
         {
             if(TenantExecutionContext.Tenant != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    PrepareCommand(cmd, TenantExecutionContext.Tenant);
+                using var cmd = connection.CreateCommand();
+                PrepareCommand(cmd, TenantExecutionContext.Tenant);
 
-                    cmd.ExecuteNonQuery();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -26,12 +24,10 @@ namespace Orbit.Multitenant.Api.Multitenancy.Database.Interceptors
         {
             if (TenantExecutionContext.Tenant != null)
             {
-                using (var cmd = connection.CreateCommand())
-                {
-                    PrepareCommand(cmd, TenantExecutionContext.Tenant);
+                await using var cmd = connection.CreateCommand();
+                PrepareCommand(cmd, TenantExecutionContext.Tenant);
 
-                    await cmd.ExecuteNonQueryAsync(cancellationToken);
-                }
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
             }
         }
 
