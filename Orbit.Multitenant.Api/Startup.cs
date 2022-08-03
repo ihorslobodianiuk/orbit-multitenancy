@@ -43,13 +43,10 @@ public class Startup
         {
             app.UseExceptionHandler("/Error");
         }
-
         app.UseStaticFiles();
-
         app.UseMultiTenant();
-
         app.UseRouting();
-            
+        app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

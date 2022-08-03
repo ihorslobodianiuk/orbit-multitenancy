@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 using Orbit.Multitenant.Api.Database.Mappings;
 using Orbit.Multitenant.Api.Database.Models;
 using Orbit.Multitenant.Api.Middleware;
@@ -12,7 +10,7 @@ public class OrbitDbContext : DbContext
 {
     private readonly IDomainContextInfo _domainContextInfo;
     
-    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Product> Products { get; set; }
     public DbSet<Tenant> Tenants { get; set; }
 
     public OrbitDbContext(DbContextOptions<OrbitDbContext> options, IDomainContextInfo domainContextInfo) 
@@ -25,7 +23,7 @@ public class OrbitDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new CustomerEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
     }
     

@@ -8,11 +8,11 @@ namespace Orbit.Multitenant.Api.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class CustomerController : ControllerBase
+public class ProductController : ControllerBase
 {
     private readonly OrbitDbContext _orbitDbContext;
 
-    public CustomerController(OrbitDbContext orbitDbContext)
+    public ProductController(OrbitDbContext orbitDbContext)
     {
         this._orbitDbContext = orbitDbContext;
     }
@@ -20,12 +20,12 @@ public class CustomerController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
-        var customers = await _orbitDbContext.Customers
+        var customers = await _orbitDbContext.Products
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         var customerDtos = customers
-            .Select(CustomerConverter.ToDto)
+            .Select(ProductConverter.ToDto)
             .ToList();
 
         return Ok(customerDtos);
@@ -34,45 +34,45 @@ public class CustomerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
     {
-        var customer = await _orbitDbContext.Customers.FindAsync(id);
+        var customer = await _orbitDbContext.Products.FindAsync(id);
 
         if(customer == null)
         {
             return NotFound();
         }
 
-        var customerDto = CustomerConverter.ToDto(customer);
+        var product = ProductConverter.ToDto(customer);
 
-        return Ok(customerDto);
+        return Ok(product);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CustomerDto customerDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post([FromBody] ProductDto productDto, CancellationToken cancellationToken)
     {
         if(!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var customer = CustomerConverter.ToModel(customerDto);
+        var product = ProductConverter.ToModel(productDto);
 
-        await _orbitDbContext.AddAsync(customer, cancellationToken);
+        await _orbitDbContext.AddAsync(product, cancellationToken);
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
-        return CreatedAtAction(nameof(Get), new { id = customer.Id }, CustomerConverter.ToDto(customer));
+        return CreatedAtAction(nameof(Get), new { id = product.Id }, ProductConverter.ToDto(product));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] CustomerDto customerDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Put(int id, [FromBody] ProductDto productDto, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var customer = CustomerConverter.ToModel(customerDto);
+        var customer = ProductConverter.ToModel(productDto);
 
-        _orbitDbContext.Customers.Update(customer);
+        _orbitDbContext.Products.Update(customer);
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
@@ -82,14 +82,14 @@ public class CustomerController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var customer = await _orbitDbContext.Customers.FindAsync(id);
+        var customer = await _orbitDbContext.Products.FindAsync(id);
 
         if(customer == null)
         {
             return NotFound();
         }
 
-        _orbitDbContext.Customers.Remove(customer);
+        _orbitDbContext.Products.Remove(customer);
 
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
