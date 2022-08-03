@@ -1,30 +1,27 @@
-﻿// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+namespace Orbit.Multitenant.Api.Dto;
 
-namespace Orbit.Multitenant.Api.Dto
+/// <summary>
+/// A Customer.
+/// </summary>
+public class CustomerDto
 {
     /// <summary>
-    /// A Customer.
+    /// Id.
     /// </summary>
-    public class CustomerDto
-    {
-        /// <summary>
-        /// Id.
-        /// </summary>
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
 
-        /// <summary>
-        /// First Name.
-        /// </summary>
-        [JsonPropertyName("firstName")]
-        public string? FirstName { get; set; }
+    /// <summary>
+    /// First Name.
+    /// </summary>
+    [JsonPropertyName("firstName")]
+    public string? FirstName { get; set; }
 
-        /// <summary>
-        /// Last Name.
-        /// </summary>
-        [JsonPropertyName("lastName")]
-        public string? LastName { get; set; }
-    }
+    /// <summary>
+    /// Last Name.
+    /// </summary>
+    [JsonPropertyName("lastName")]
+    public string? LastName { get; set; }
 }
