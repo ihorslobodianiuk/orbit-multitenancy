@@ -9,7 +9,7 @@ public class CustomerEntityTypeConfiguration : IEntityTypeConfiguration<Customer
     public void Configure(EntityTypeBuilder<Customer> builder)
     {
         builder
-            .ToTable("customer", "sample")
+            .ToTable("customer", "public")
             .HasKey(x => x.Id);
 
         builder

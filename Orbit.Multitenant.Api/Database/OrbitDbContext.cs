@@ -31,15 +31,16 @@ public class OrbitDbContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        _domainContextInfo.TenantName = "c7c6a582-4031-4e48-b8bf-f1a5289c9997";
         if (!string.IsNullOrEmpty(_domainContextInfo.TenantName))
         {
-            optionsBuilder.UseNpgsql(option => GetConnection(_domainContextInfo.TenantName));
+            var connection = GetConnection(_domainContextInfo.TenantName);
+            optionsBuilder.UseNpgsql(connection);
         }
     }
 
-    private string? GetConnection(string tenantName)
+    private string GetConnection(string tenantName)
     {
-        var connection = this.Database.GetConnectionString();
-        return connection == null || connection.Contains("Username") ? connection : connection + $"Username={tenantName};Password=123;";
+        return $"Server=localhost;Port=5432;Database=orbit-test;User Id={tenantName};Password=123;";
     }
 }

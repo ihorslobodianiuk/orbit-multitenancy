@@ -6,29 +6,31 @@ namespace Orbit.Multitenant.Api;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
     public IConfiguration Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container.
+    
+    public Startup(IWebHostEnvironment env)
+    {
+        Configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json")
+            .AddEnvironmentVariables()
+            .AddUserSecrets<Startup>()
+            .Build();
+    }
+    
     public void ConfigureServices(IServiceCollection services)
     {
-        // Register Scoped DbContexts:
-        services
-            // Register the Application Database:
-            .AddDbContext<OrbitDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("ApplicationDatabase")));
-            
+        services.AddDbContext<OrbitDbContext>(options =>
+        {
+            options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+        });
+
         services.AddScoped<IDomainContextInfo, DomainContextInfo>();
             
         services.AddControllers();
         services.AddSwaggerGen();
     }
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
