@@ -1,18 +1,27 @@
-namespace Orbit.Application.Api.Services
-{
-    public class UserService : IUserService  
-    {
-        public bool ValidateCredentials(string username, string password)  
-        {
-            // We should actually validate tenant name and password properly here but for demo purpose just pass due to Db initialization
-            // var tenant = _context.Tenants.FirstOrDefault(t => t.Name == username);
-            // return tenant != null && password.Equals("123");  
-            return Guid.TryParse(username, out var _) && password.Equals("123");  
-        }  
-    }
+using Orbit.Application.Api.Dto;
+using Orbit.Application.Api.Infrastructure;
 
-    public interface IUserService
+namespace Orbit.Application.Api.Services;
+
+public class UserService : IUserService  
+{
+    private readonly ITenantService _tenantService;
+
+    public UserService(ITenantService tenantService)
     {
-        bool ValidateCredentials(string username, string password);
+        _tenantService = tenantService;
     }
+        
+    public async Task<TenantDto> ValidateCredentials(string username, string password)
+    {
+        var tenant = await _tenantService.GetTenantByName(username);
+        if (tenant == null || password != Constants.DefaultPassword)
+            throw new ArgumentException("Invalid credentials");
+        return tenant;
+    }  
+}
+
+public interface IUserService
+{
+    Task<TenantDto> ValidateCredentials(string username, string password);
 }

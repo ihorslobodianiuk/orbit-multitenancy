@@ -4,7 +4,7 @@ public class Tenant
 {
     public Tenant()
     {
-        Features = new HashSet<Feature>();
+        TenantFeatures = new HashSet<TenantFeature>();
     }
 
     public Guid TenantId { get; set; }
@@ -12,5 +12,5 @@ public class Tenant
     public string Status { get; set; }
     public string Tier { get; set; }
 
-    public virtual ICollection<Feature> Features { get; set; }
+    public virtual ICollection<TenantFeature> TenantFeatures { get; set; }
 }

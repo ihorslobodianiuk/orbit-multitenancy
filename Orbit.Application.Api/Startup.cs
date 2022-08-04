@@ -29,6 +29,8 @@ namespace Orbit.Application.Api
             {
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
+            
+            services.Configure<TenantApiOptions>(Configuration.GetSection(TenantApiOptions.Section));
         
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -67,9 +69,15 @@ namespace Orbit.Application.Api
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
+
+            services.AddHttpClient<ITenantService, TenantService>((serviceProvider, client) =>
+            {
+                client.BaseAddress = new Uri(serviceProvider.GetService<TenantApiOptions>().BaseUrl);
+            });
         
             // Register DI services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IDomainContextInfo, DomainContextInfo>();
         }
     

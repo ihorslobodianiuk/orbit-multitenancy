@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Orbit.Application.Api.Dto;
 using Orbit.Application.Api.Services;
 
 namespace Orbit.Application.Api.Infrastructure
@@ -23,25 +24,24 @@ namespace Orbit.Application.Api.Infrastructure
         }  
   
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()  
-        {  
-            string username = null;  
+        {
+            TenantDto tenant;
             try  
             {  
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);  
                 var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader.Parameter)).Split(':');  
-                username = credentials.FirstOrDefault();
-                var password = credentials.LastOrDefault();  
-  
-                if (!_userService.ValidateCredentials(username, password))  
-                    throw new ArgumentException("Invalid credentials");  
+                var username = credentials.FirstOrDefault();
+                var password = credentials.LastOrDefault();
+
+                tenant = await _userService.ValidateCredentials(username, password); 
             }  
             catch (Exception ex)  
             {  
                 return AuthenticateResult.Fail($"Authentication failed: {ex.Message}");  
-            }  
-  
+            }
+
             var claims = new[] {  
-                new Claim(ClaimTypes.Name, username)  
+                new Claim(Constants.TenantClaim, tenant.TenantId.ToString())  
             };  
             var identity = new ClaimsIdentity(claims, Scheme.Name);  
             var principal = new ClaimsPrincipal(identity);  

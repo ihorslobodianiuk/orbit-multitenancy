@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+﻿using Orbit.Application.Api.Infrastructure;
 
 namespace Orbit.Application.Api.Middleware
 {
@@ -15,21 +15,16 @@ namespace Orbit.Application.Api.Middleware
         {
             if (context?.User.Identity?.IsAuthenticated == true)
             {
-                var tenantValue = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                var tenantValue = context.User.Claims.FirstOrDefault(c => c.Type == Constants.TenantClaim)?.Value;
                 if (!string.IsNullOrWhiteSpace(tenantValue) && Guid.TryParse(tenantValue, out var tenantId))
                 {
                     domainContextInfo.TenantId = tenantId;
-                    // var tenant = await dbContext.Tenants
-                    //     .AsNoTracking()
-                    //     .FirstOrDefaultAsync(x => x.Name == tenantNameString, context.RequestAborted);
-                    //
-                    // if (tenant == null)
-                    // {
-                    //     context.Response.StatusCode = 400;
-                    //     await context.Response.WriteAsync("Invalid Tenant Name", context.RequestAborted);
-                    //
-                    //     return;
-                    // }
+                }
+                else
+                {
+                    context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("Invalid Tenant", context.RequestAborted);
+                    return;
                 }
             }
 

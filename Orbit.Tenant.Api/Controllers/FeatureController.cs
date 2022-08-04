@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Orbit.Tenant.Api.Database;
 using Orbit.Tenant.Api.Dto;
+using Orbit.Tenant.Api.Models;
 
 namespace Orbit.Tenant.Api.Controllers;
 
@@ -33,21 +34,48 @@ public class FeatureController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(int featureId, bool enabled, CancellationToken cancellationToken)
+    public async Task<IActionResult> Post([FromBody] FeatureDto feature, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        var featureEntity = await _dbContext.Features.SingleOrDefaultAsync(f => f.FeatureId == feature.FeatureId, cancellationToken);
+        if (featureEntity != null)
+        {
+            _mapper.Map(feature, featureEntity);
+            _dbContext.Features.Update(featureEntity);
+        }
+        else
+        {
+            await _dbContext.Features.AddAsync(_mapper.Map<Feature>(feature), cancellationToken);
+        }
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(_mapper.Map<FeatureDto>(feature));
+    }
+    
+    [HttpPost("tenant")]
+    public async Task<IActionResult> PostTenantFeature([FromBody] TenantFeatureDto feature, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-
-        var feature = await _dbContext.Features.SingleOrDefaultAsync(f => f.FeatureId == featureId, cancellationToken);
-        if (feature != null && enabled != feature.Enabled)
-        {
-            // feature.Toggle(_domainContextInfo.TenantId!.Value);
-            _dbContext.Features.Update(feature);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
+        var featureEntity = await _dbContext.Features.SingleOrDefaultAsync(f => f.FeatureId == feature.FeatureId, cancellationToken);
+        // if (featureEntity != null)
+        // {
+        //     _mapper.Map<TenantFeature>()
+        // }
+        // if (feature != null && enabled != feature.Enabled)
+        // {
+        //     // feature.Toggle(_domainContextInfo.TenantId!.Value);
+        //     _dbContext.Features.Update(feature);
+        //     await _dbContext.SaveChangesAsync(cancellationToken);
+        // }
 
         return NoContent();
     }

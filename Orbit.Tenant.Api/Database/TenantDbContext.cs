@@ -8,6 +8,7 @@ public class TenantDbContext : DbContext
 {
     public DbSet<Models.Tenant> Tenants { get; set; }
     public DbSet<Feature> Features { get; set; }
+    public DbSet<TenantFeature> TenantFeatures { get; set; }
 
     public TenantDbContext(DbContextOptions<TenantDbContext> options) 
         : base(options)
@@ -20,5 +21,6 @@ public class TenantDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
+        // modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
     }
 }

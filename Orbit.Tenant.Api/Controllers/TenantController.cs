@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Orbit.Tenant.Api.Database;
+using Orbit.Tenant.Api.Dto;
 
 namespace Orbit.Tenant.Api.Controllers;
 
@@ -9,10 +11,13 @@ namespace Orbit.Tenant.Api.Controllers;
 public class TenantController : ControllerBase
 {
     private readonly TenantDbContext _dbContext;
+    private readonly IMapper _mapper;
 
-    public TenantController(TenantDbContext dbContext)
+    public TenantController(TenantDbContext dbContext,
+        IMapper mapper)
     {
         _dbContext = dbContext;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -25,8 +30,18 @@ public class TenantController : ControllerBase
         return Ok(tenants);
     }
     
+    [HttpGet("{tenantId}")]
+    public async Task<ActionResult<TenantDto>> GetByName(string tenantName, CancellationToken cancellationToken)
+    {
+        var tenant = await _dbContext.Tenants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Name == tenantName, cancellationToken);
+
+        return Ok(_mapper.Map<TenantDto>(tenant));
+    }
+    
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Models.Tenant tenant, CancellationToken cancellationToken)
+    public async Task<ActionResult<TenantDto>> Post([FromBody] Models.Tenant tenant, CancellationToken cancellationToken)
     {
         if(!ModelState.IsValid)
         {
@@ -36,7 +51,7 @@ public class TenantController : ControllerBase
         await _dbContext.Tenants.AddAsync(tenant, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return Ok(tenant);
+        return Ok(_mapper.Map<TenantDto>(tenant));
     }
 
     [HttpDelete("{id}")]
