@@ -1,4 +1,4 @@
-﻿namespace Orbit.Tenant.Api.Models;
+﻿namespace Orbit.TenantManagement.Api.Models;
 
 public class Tenant
 {

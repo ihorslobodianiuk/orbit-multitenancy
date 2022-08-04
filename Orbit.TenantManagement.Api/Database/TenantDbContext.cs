@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Orbit.Tenant.Api.Database.Mappings;
-using Orbit.Tenant.Api.Models;
+using Orbit.TenantManagement.Api.Database.Mappings;
+using Orbit.TenantManagement.Api.Models;
 
-namespace Orbit.Tenant.Api.Database;
+namespace Orbit.TenantManagement.Api.Database;
 
 public class TenantDbContext : DbContext
 {
-    public DbSet<Models.Tenant> Tenants { get; set; }
+    public DbSet<Tenant> Tenants { get; set; }
     public DbSet<Feature> Features { get; set; }
     public DbSet<TenantFeature> TenantFeatures { get; set; }
 

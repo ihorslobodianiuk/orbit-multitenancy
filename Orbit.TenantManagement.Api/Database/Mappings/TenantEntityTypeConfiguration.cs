@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Orbit.Tenant.Api.Database.Mappings;
+namespace Orbit.TenantManagement.Api.Database.Mappings;
 
 public class TenantEntityTypeConfiguration : IEntityTypeConfiguration<Models.Tenant>
 {

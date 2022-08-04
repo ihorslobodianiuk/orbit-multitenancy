@@ -1,4 +1,4 @@
-namespace Orbit.Tenant.Api;
+namespace Orbit.TenantManagement.Api;
 
 public class Program
 {

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Orbit.Tenant.Api.Database;
-using Orbit.Tenant.Api.Dto;
-using Orbit.Tenant.Api.Models;
+using Orbit.TenantManagement.Api.Database;
+using Orbit.TenantManagement.Api.Dto;
+using Orbit.TenantManagement.Api.Models;
 
-namespace Orbit.Tenant.Api.Controllers;
+namespace Orbit.TenantManagement.Api.Controllers;
 
 [Route("[controller]")]
 [ApiController]
@@ -17,7 +17,7 @@ public class FeatureController : ControllerBase
     public FeatureController(TenantDbContext dbContext,
         IMapper mapper)
     {
-        this._dbContext = dbContext;
+        _dbContext = dbContext;
         _mapper = mapper;
     }
 

@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Orbit.Tenant.Api.Database;
-using Orbit.Tenant.Api.Infrastructure;
+using Orbit.TenantManagement.Api.Database;
+using Orbit.TenantManagement.Api.Infrastructure;
 
-namespace Orbit.Tenant.Api;
+namespace Orbit.TenantManagement.Api;
 
 public class Startup
 {

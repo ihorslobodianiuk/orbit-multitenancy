@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Orbit.Tenant.Api.Models;
+using Orbit.TenantManagement.Api.Models;
 
-namespace Orbit.Tenant.Api.Database.Mappings;
+namespace Orbit.TenantManagement.Api.Database.Mappings;
 
 public class FeatureEntityTypeConfiguration : IEntityTypeConfiguration<Feature>
 {

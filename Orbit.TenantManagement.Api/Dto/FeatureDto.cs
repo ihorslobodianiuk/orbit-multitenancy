@@ -1,4 +1,4 @@
-namespace Orbit.Tenant.Api.Dto;
+namespace Orbit.TenantManagement.Api.Dto;
 
 public class FeatureDto
 {

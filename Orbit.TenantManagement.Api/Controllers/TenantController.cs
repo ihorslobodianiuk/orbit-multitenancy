@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Orbit.Tenant.Api.Database;
-using Orbit.Tenant.Api.Dto;
+using Orbit.TenantManagement.Api.Database;
+using Orbit.TenantManagement.Api.Dto;
+using Orbit.TenantManagement.Api.Models;
 
-namespace Orbit.Tenant.Api.Controllers;
+namespace Orbit.TenantManagement.Api.Controllers;
 
 [Route("[controller]")]
 [ApiController]
@@ -41,17 +42,22 @@ public class TenantController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<TenantDto>> Post([FromBody] Models.Tenant tenant, CancellationToken cancellationToken)
+    public async Task<ActionResult<TenantDto>> Post([FromBody] TenantPostDto tenant, CancellationToken cancellationToken)
     {
         if(!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        await _dbContext.Tenants.AddAsync(tenant, cancellationToken);
+        var newTenant = await _dbContext.Tenants.AddAsync(_mapper.Map<Tenant>(tenant), cancellationToken);
+        var username = newTenant.Entity.TenantId.ToString();
+        await _dbContext.Database.ExecuteSqlRawAsync($"create user \"{username}\" with password '123';", cancellationToken: cancellationToken);
+        await _dbContext.Database.ExecuteSqlRawAsync($"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO \"{username}\";", cancellationToken: cancellationToken);
+        await _dbContext.Database.ExecuteSqlRawAsync($"grant delete, insert, select, update on product to \"{username}\";", cancellationToken: cancellationToken);
+        
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return Ok(_mapper.Map<TenantDto>(tenant));
+        return Ok(_mapper.Map<TenantDto>(newTenant.Entity));
     }
 
     [HttpDelete("{id}")]

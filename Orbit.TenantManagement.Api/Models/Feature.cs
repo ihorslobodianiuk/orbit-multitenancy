@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Orbit.Tenant.Api.Models;
+﻿namespace Orbit.TenantManagement.Api.Models;
 
 public class Feature
 {

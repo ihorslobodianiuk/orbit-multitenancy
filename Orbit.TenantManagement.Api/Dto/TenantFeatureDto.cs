@@ -1,12 +1,9 @@
-namespace Orbit.Tenant.Api.Models;
+namespace Orbit.TenantManagement.Api.Dto;
 
-public class TenantFeature
+public class TenantFeatureDto
 {
     public Guid TenantId { get; set; }
     public int FeatureId { get; set; }
     public bool Enabled { get; set; }
     public string Config { get; set; }
-
-    public virtual Feature Feature { get; set; }
-    public virtual Tenant Tenant { get; set; }
 }
