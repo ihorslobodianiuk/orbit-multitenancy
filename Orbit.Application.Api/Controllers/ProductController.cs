@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Orbit.Application.Api.Database;
 using Orbit.Application.Api.Dto;
+using Orbit.Application.Api.Infrastructure;
 using Orbit.Application.Api.Models;
 
 namespace Orbit.Application.Api.Controllers
@@ -94,6 +95,17 @@ namespace Orbit.Application.Api.Controllers
             await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
             return NoContent();
+        }
+        
+        [HttpGet("promo")]
+        [FeatureToggleFilter("promo")]
+        public async Task<IActionResult> GetPromoProduct()
+        {
+            return Ok(new Product
+            {
+                Id = -1,
+                Name = "Promo Product"
+            });
         }
     }
 }

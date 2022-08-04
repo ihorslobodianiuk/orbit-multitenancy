@@ -25,15 +25,18 @@ namespace Orbit.Application.Api.Infrastructure
   
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()  
         {
-            TenantDto tenant;
+            string username;
             try  
             {  
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);  
                 var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authHeader.Parameter)).Split(':');  
-                var username = credentials.FirstOrDefault();
+                username = credentials.FirstOrDefault();
                 var password = credentials.LastOrDefault();
 
-                tenant = await _userService.ValidateCredentials(username, password); 
+                if (!_userService.ValidateCredentials(username, password))
+                {
+                    throw new ArgumentException("Invalid credentials");
+                } 
             }  
             catch (Exception ex)  
             {  
@@ -41,7 +44,7 @@ namespace Orbit.Application.Api.Infrastructure
             }
 
             var claims = new[] {  
-                new Claim(Constants.TenantClaim, tenant.TenantId.ToString())  
+                new Claim(Constants.TenantClaim, username)  
             };  
             var identity = new ClaimsIdentity(claims, Scheme.Name);  
             var principal = new ClaimsPrincipal(identity);  

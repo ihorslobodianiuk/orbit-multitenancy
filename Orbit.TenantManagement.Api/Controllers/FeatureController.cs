@@ -56,27 +56,26 @@ public class FeatureController : ControllerBase
 
         return Ok(_mapper.Map<FeatureDto>(feature));
     }
+
+    [HttpGet("{tenantId}")]
+    public async Task<IActionResult> GetTenantFeatures(Guid tenantId)
+    {
+        return Ok(await _dbContext.TenantFeatures.Include(tf => tf.Feature)
+            .Where(tf => tf.TenantId == tenantId)
+            .Select(tf => _mapper.Map<TenantFeatureDto>(tf)).ToListAsync());
+    }
     
     [HttpPost("tenant")]
-    public async Task<IActionResult> PostTenantFeature([FromBody] TenantFeatureDto feature, CancellationToken cancellationToken)
+    public async Task<IActionResult> PostTenantFeature([FromBody] TenantFeaturePostDto tenantFeaturePost, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var featureEntity = await _dbContext.Features.SingleOrDefaultAsync(f => f.FeatureId == feature.FeatureId, cancellationToken);
-        // if (featureEntity != null)
-        // {
-        //     _mapper.Map<TenantFeature>()
-        // }
-        // if (feature != null && enabled != feature.Enabled)
-        // {
-        //     // feature.Toggle(_domainContextInfo.TenantId!.Value);
-        //     _dbContext.Features.Update(feature);
-        //     await _dbContext.SaveChangesAsync(cancellationToken);
-        // }
-
-        return NoContent();
+        var feature = await _dbContext.TenantFeatures.AddAsync(_mapper.Map<TenantFeature>(tenantFeaturePost), cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        
+        return Ok(_mapper.Map<TenantFeaturePostDto>(feature.Entity));
     }
 }

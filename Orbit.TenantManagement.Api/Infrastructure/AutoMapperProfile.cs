@@ -11,6 +11,9 @@ public class AutoMapperProfile : Profile
         CreateMap<Tenant, TenantDto>().ReverseMap();
         CreateMap<TenantPostDto, Tenant>()
             .ForMember(dest => dest.TenantId, opt => opt.MapFrom(src => Guid.NewGuid()));
-        CreateMap<Feature, FeatureDto>();
+        CreateMap<Feature, FeatureDto>().ReverseMap();
+        CreateMap<TenantFeaturePostDto, TenantFeature>().ReverseMap();
+        CreateMap<TenantFeature, TenantFeatureDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Feature.Name));
     }
 }

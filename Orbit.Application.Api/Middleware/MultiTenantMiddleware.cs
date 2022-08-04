@@ -1,4 +1,6 @@
-﻿using Orbit.Application.Api.Infrastructure;
+﻿using Microsoft.FeatureManagement;
+using Orbit.Application.Api.Infrastructure;
+using Orbit.Application.Api.Services;
 
 namespace Orbit.Application.Api.Middleware
 {
@@ -11,21 +13,23 @@ namespace Orbit.Application.Api.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IDomainContextInfo domainContextInfo)
+        public async Task InvokeAsync(HttpContext context,
+            IDomainContextInfo domainContextInfo,
+            ITenantService tenantService)
         {
             if (context?.User.Identity?.IsAuthenticated == true)
             {
-                var tenantValue = context.User.Claims.FirstOrDefault(c => c.Type == Constants.TenantClaim)?.Value;
-                if (!string.IsNullOrWhiteSpace(tenantValue) && Guid.TryParse(tenantValue, out var tenantId))
-                {
-                    domainContextInfo.TenantId = tenantId;
-                }
-                else
+                var tenantClaim = context.User.Claims.FirstOrDefault(c => c.Type == Constants.TenantClaim)?.Value;
+                if (string.IsNullOrWhiteSpace(tenantClaim))
                 {
                     context.Response.StatusCode = 400;
                     await context.Response.WriteAsync("Invalid Tenant", context.RequestAborted);
                     return;
                 }
+                
+                var tenant = await tenantService.GetTenantByName(tenantClaim);
+                domainContextInfo.TenantId = tenant.TenantId;
+                domainContextInfo.Features = await tenantService.GetFeatures(tenant.TenantId);
             }
 
             await _next(context);

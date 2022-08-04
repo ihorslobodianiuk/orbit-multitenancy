@@ -12,16 +12,13 @@ public class UserService : IUserService
         _tenantService = tenantService;
     }
         
-    public async Task<TenantDto> ValidateCredentials(string username, string password)
+    public bool ValidateCredentials(string username, string password)
     {
-        var tenant = await _tenantService.GetTenantByName(username);
-        if (tenant == null || password != Constants.DefaultPassword)
-            throw new ArgumentException("Invalid credentials");
-        return tenant;
+        return !string.IsNullOrEmpty(username) && password == Constants.DefaultPassword;
     }  
 }
 
 public interface IUserService
 {
-    Task<TenantDto> ValidateCredentials(string username, string password);
+    bool ValidateCredentials(string username, string password);
 }
