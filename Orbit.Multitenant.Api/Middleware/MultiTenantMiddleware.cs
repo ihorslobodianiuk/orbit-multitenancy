@@ -36,7 +36,7 @@ public class MultiTenantMiddleware
                     return;
                 }
 
-                domainContextInfo.TenantName = tenantName;
+                domainContextInfo.TenantId = new Guid(tenantName);
             }
         }
 

@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Orbit.Multitenant.Api.Converters;
 using Orbit.Multitenant.Api.Database;
 using Orbit.Multitenant.Api.Dto;
+using Orbit.Multitenant.Api.Models;
 
 namespace Orbit.Multitenant.Api.Controllers;
 
@@ -11,39 +12,36 @@ namespace Orbit.Multitenant.Api.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly OrbitDbContext _orbitDbContext;
+    private readonly IMapper _mapper;
 
-    public ProductController(OrbitDbContext orbitDbContext)
+    public ProductController(OrbitDbContext orbitDbContext,
+        IMapper mapper)
     {
         this._orbitDbContext = orbitDbContext;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
-        var customers = await _orbitDbContext.Products
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var products = _orbitDbContext.Products.AsNoTracking();
 
-        var customerDtos = customers
-            .Select(ProductConverter.ToDto)
-            .ToList();
+        var productDtos = _mapper.ProjectTo<List<ProductDto>>(products);
 
-        return Ok(customerDtos);
+        return Ok(productDtos);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
     {
-        var customer = await _orbitDbContext.Products.FindAsync(id);
+        var product = await _orbitDbContext.Products.FindAsync(id);
 
-        if(customer == null)
+        if(product == null)
         {
             return NotFound();
         }
 
-        var product = ProductConverter.ToDto(customer);
-
-        return Ok(product);
+        return Ok(_mapper.Map<ProductDto>(product));
     }
 
     [HttpPost]
@@ -54,12 +52,12 @@ public class ProductController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var product = ProductConverter.ToModel(productDto);
+        var product = _mapper.Map<Product>(productDto);
 
         await _orbitDbContext.AddAsync(product, cancellationToken);
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
-        return CreatedAtAction(nameof(Get), new { id = product.Id }, ProductConverter.ToDto(product));
+        return CreatedAtAction(nameof(Get), new { id = product.Id }, _mapper.Map<ProductDto>(product));
     }
 
     [HttpPut("{id}")]
@@ -70,9 +68,9 @@ public class ProductController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var customer = ProductConverter.ToModel(productDto);
+        var product = _mapper.Map<Product>(productDto);
 
-        _orbitDbContext.Products.Update(customer);
+        _orbitDbContext.Products.Update(product);
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
@@ -82,14 +80,14 @@ public class ProductController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var customer = await _orbitDbContext.Products.FindAsync(id);
+        var product = await _orbitDbContext.Products.FindAsync(id);
 
-        if(customer == null)
+        if(product == null)
         {
             return NotFound();
         }
 
-        _orbitDbContext.Products.Remove(customer);
+        _orbitDbContext.Products.Remove(product);
 
         await _orbitDbContext.SaveChangesAsync(cancellationToken);
 

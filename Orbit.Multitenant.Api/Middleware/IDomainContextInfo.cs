@@ -2,5 +2,6 @@
 
 public interface IDomainContextInfo
 {
-    string TenantName { get; set; }
+    Guid? TenantId { get; set; }
+    public string? TenantName { get; }
 }

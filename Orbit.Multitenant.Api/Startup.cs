@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Orbit.Multitenant.Api.Database;
+using Orbit.Multitenant.Api.Infrastructure;
 using Orbit.Multitenant.Api.Middleware;
 
 namespace Orbit.Multitenant.Api;
@@ -29,6 +31,13 @@ public class Startup
             
         services.AddControllers();
         services.AddSwaggerGen();
+        
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new AutoMapperProfile());
+        });
+        var mapper = config.CreateMapper();
+        services.AddSingleton(mapper);
     }
     
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
