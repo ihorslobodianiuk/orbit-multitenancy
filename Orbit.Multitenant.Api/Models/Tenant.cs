@@ -1,8 +1,16 @@
-﻿namespace Orbit.Multitenant.Api.Database.Models;
+﻿namespace Orbit.Multitenant.Api.Models;
 
 public class Tenant
 {
-    public Guid TenantId { get; set; }
+    public Tenant()
+    {
+        Features = new HashSet<Feature>();
+    }
 
-    public string Name { get; set; }
+    public Guid TenantId { get; set; }
+    public string? Name { get; set; }
+    public string? Status { get; set; }
+    public string? Tier { get; set; }
+
+    public virtual ICollection<Feature> Features { get; set; }
 }
