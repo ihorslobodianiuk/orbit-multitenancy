@@ -70,10 +70,7 @@ namespace Orbit.Application.Api
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
 
-            services.AddHttpClient<ITenantService, TenantService>((serviceProvider, client) =>
-            {
-                client.BaseAddress = new Uri(serviceProvider.GetService<TenantApiOptions>().BaseUrl);
-            });
+            services.AddHttpClient();
         
             // Register DI services
             services.AddScoped<IUserService, UserService>();

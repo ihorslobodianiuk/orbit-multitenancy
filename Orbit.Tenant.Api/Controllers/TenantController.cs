@@ -30,7 +30,7 @@ public class TenantController : ControllerBase
         return Ok(tenants);
     }
     
-    [HttpGet("{tenantId}")]
+    [HttpGet("{tenantName}")]
     public async Task<ActionResult<TenantDto>> GetByName(string tenantName, CancellationToken cancellationToken)
     {
         var tenant = await _dbContext.Tenants

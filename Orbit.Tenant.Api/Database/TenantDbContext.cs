@@ -21,6 +21,6 @@ public class TenantDbContext : DbContext
 
         modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
-        // modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new TenantFeatureEntityTypeConfiguration());
     }
 }
